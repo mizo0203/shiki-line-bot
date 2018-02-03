@@ -4,7 +4,6 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 public class ReversiModel {
   public static final int A = 1;
@@ -15,43 +14,40 @@ public class ReversiModel {
   public static final int F = 6;
   public static final int G = 7;
   public static final int H = 8;
-  public static final int PERIMETER = 8;
-  private static final Logger LOG = Logger.getLogger(ReversiModel.class.getName());
-  private final Pieces[][] borad = new Pieces[10][10];
+  private static final int PERIMETER = 8;
+  private final Pieces[][] board = new Pieces[10][10];
   private final int[] dx_array = new int[] {-1, 0, 1, -1, 1, -1, 0, 1};
   private final int[] dy_array = new int[] {-1, -1, -1, 0, 0, 1, 1, 1};
 
   public boolean play(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y, Pieces pieces) {
-    LOG.info("play x: " + x + " y: " + y + " p: " + pieces);
     if (reversePieces(x, y, pieces) == 0) {
       return false;
     }
-    borad[x][y] = pieces;
+    board[y][x] = pieces;
     return true;
   }
 
   public void setPieces(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y, Pieces pieces) {
-    borad[x][y] = pieces;
+    board[y][x] = pieces;
   }
 
   @NotNull
   public Pieces getPieces(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y) {
-    return borad[x][y];
+    return board[y][x];
   }
 
   public void reset() {
-    for (Pieces[] piecesLine : borad) {
+    for (Pieces[] piecesLine : board) {
       Arrays.fill(piecesLine, Pieces.EMPTY);
     }
-    borad[4][D] = Pieces.WHITE;
-    borad[4][E] = Pieces.BLACK;
-    borad[5][D] = Pieces.BLACK;
-    borad[5][E] = Pieces.WHITE;
+    board[4][D] = Pieces.WHITE;
+    board[4][E] = Pieces.BLACK;
+    board[5][D] = Pieces.BLACK;
+    board[5][E] = Pieces.WHITE;
   }
 
   private int reversePieces(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y, Pieces oneself) {
-    if (borad[y][x] != Pieces.EMPTY) {
-      LOG.info("reversePieces 1 cnt: " + 0);
+    if (board[y][x] != Pieces.EMPTY) {
       return 0;
     }
     int cnt = 0;
@@ -60,33 +56,21 @@ public class ReversiModel {
       int dy = dy_array[i];
       int dx = dx_array[i];
       int d = 1;
-      while (borad[y + (dy * d)][x + (dx * d)] == opponent) {
+      while (board[y + (dy * d)][x + (dx * d)] == opponent) {
         d++;
       }
-      LOG.info(
-          "dx: "
-              + dx
-              + " dy: "
-              + dy
-              + " d: "
-              + d
-              + " b: "
-              + borad[y + (dy * d)][x + (dx * d)]
-              + " oneself: "
-              + oneself);
-      if (borad[y + (dy * d)][x + (dx * d)] == oneself) {
+      if (board[y + (dy * d)][x + (dx * d)] == oneself) {
         for (int j = 1; j < d; j++) {
-          borad[y + (dy * j)][x + (dx * j)] = oneself;
+          board[y + (dy * j)][x + (dx * j)] = oneself;
           cnt++;
         }
       }
     }
-    LOG.info("reversePieces 2 cnt: " + cnt);
     return cnt;
   }
 
   private boolean canReversePieces(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y, Pieces oneself) {
-    if (borad[y][x] != Pieces.EMPTY) {
+    if (board[y][x] != Pieces.EMPTY) {
       return false;
     }
     Pieces opponent = oneself.getOpponent();
@@ -94,10 +78,10 @@ public class ReversiModel {
       int dy = dy_array[i];
       int dx = dx_array[i];
       int d = 1;
-      while (borad[y + (dy * d)][x + (dx * d)] == opponent) {
+      while (board[y + (dy * d)][x + (dx * d)] == opponent) {
         d++;
       }
-      if (borad[y + (dy * d)][x + (dx * d)] == oneself) {
+      if (board[y + (dy * d)][x + (dx * d)] == oneself) {
         if (1 < d) {
           return true;
         }

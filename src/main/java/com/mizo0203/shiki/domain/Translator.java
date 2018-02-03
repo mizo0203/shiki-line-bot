@@ -36,9 +36,12 @@ import java.util.Date;
   }
 
   public boolean play(ReversiModel reversiModel, String message, Pieces pieces) {
+    if (message.length() != 2) {
+      return false;
+    }
     int x = parseX(message);
     int y = parseY(message);
-    return reversiModel.play(x, y, pieces);
+    return x != 0 && y != 0 && reversiModel.play(x, y, pieces);
   }
 
   private int parseX(String message) {
@@ -74,8 +77,12 @@ import java.util.Date;
   }
 
   private int parseY(String message) {
-    String y = message.substring(1, 2);
-    return Integer.parseInt(y);
+    try {
+      String y = message.substring(1, 2);
+      return Integer.parseInt(y);
+    } catch (NumberFormatException e) {
+      return 0;
+    }
   }
 
   public String parseLineMessageText(ReversiModel reversiModel, Pieces pieces) {
