@@ -62,4 +62,8 @@ public class Repository {
   public List<Event> getCallbackEventList(HttpServletRequest req) {
     return mLineRepository.getCallbackEventList(req);
   }
+
+  public void leaveGroup(String groupId) {
+    mLineRepository.leaveGroup(groupId);
+  }
 }

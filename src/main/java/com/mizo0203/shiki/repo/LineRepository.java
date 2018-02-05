@@ -32,8 +32,9 @@ import java.util.logging.Logger;
       "https://api.line.me/v2/bot/message/push";
   private static final String MESSAGING_API_IDS_MEMBERS_GROUP_URL_STR =
       "https://api.line.me/v2/bot/group/%s/members/ids";
+  private static final String MESSAGING_API_LEAVE_GROUP_URL_STR =
+      "https://api.line.me/v2/bot/group/%s/leave";
   private final LineBotCallbackRequestParser mLineBotCallbackRequestParser;
-
   private final String mChannelAccessToken;
 
   LineRepository(String channelSecret, String channelAccessToken) {
@@ -116,6 +117,17 @@ import java.util.logging.Logger;
       reqProp.put("Content-Type", "application/json");
       reqProp.put("Authorization", "Bearer " + mChannelAccessToken);
       HttpUtil.get(url, reqProp, null);
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void leaveGroup(String groupId) {
+    try {
+      final URL url = new URL(String.format(MESSAGING_API_LEAVE_GROUP_URL_STR, groupId));
+      final Map<String, String> reqProp = new HashMap<>();
+      reqProp.put("Authorization", "Bearer " + mChannelAccessToken);
+      HttpUtil.post(url, reqProp, "", null);
     } catch (final IOException e) {
       e.printStackTrace();
     }

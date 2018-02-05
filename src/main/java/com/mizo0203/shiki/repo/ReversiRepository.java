@@ -52,7 +52,7 @@ public class ReversiRepository implements Closeable {
     return reversiBoard.toString();
   }
 
-  public Pieces getPieces() {
+  public Pieces getNextPieces() {
     int pieces = config.getPieces();
     if (pieces < 0) {
       return null;
