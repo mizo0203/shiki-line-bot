@@ -86,7 +86,11 @@ import java.util.Date;
   }
 
   public String parseLineMessageText(ReversiModel reversiModel, Pieces pieces) {
-    StringBuilder messageText = new StringBuilder("＼ＡＢＣＤＥＦＧＨ\n");
+    StringBuilder messageText = new StringBuilder();
+    int black = reversiModel.countPieces(Pieces.BLACK);
+    int white = reversiModel.countPieces(Pieces.WHITE);
+    messageText.append("黒Ｘ：").append(black).append("　白Ｏ：").append(white).append("\n");
+    messageText.append("＼ＡＢＣＤＥＦＧＨ\n");
     for (int y = 1; y <= 8; y++) {
       messageText.append(parseAAA(y));
       for (int x = 1; x <= 8; x++) {
@@ -95,14 +99,19 @@ import java.util.Date;
       messageText.append("\n");
     }
     if (pieces == null) {
-      messageText.append("終了\n");
+      messageText.append("ゲーム終了\n");
+      if (black != white) {
+        messageText.append("人生の勝利者：").append(black > white ? "黒Ｘ" : "白Ｏ");
+      } else {
+        messageText.append("引き分け");
+      }
     } else {
       switch (pieces) {
         case BLACK:
-          messageText.append("黒Ｘの手番：\n");
+          messageText.append("黒Ｘの手番：");
           break;
         case WHITE:
-          messageText.append("白Ｏの手番：\n");
+          messageText.append("白Ｏの手番：");
           break;
         default:
           // NOP

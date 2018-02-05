@@ -108,4 +108,16 @@ public class ReversiModel {
     }
     return null;
   }
+
+  public int countPieces(Pieces pieces) {
+    int cnt = 0;
+    for (int y = 1; y <= 8; y++) {
+      for (int x = 1; x <= 8; x++) {
+        if (board[y][x] == pieces) {
+          cnt++;
+        }
+      }
+    }
+    return cnt;
+  }
 }
