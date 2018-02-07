@@ -14,14 +14,15 @@ public class ReversiRepository implements Closeable {
 
   public ReversiRepository(LineTalkRoomConfig config) {
     this.config = config;
-    reversiModel = parseReversiBoard(config.getReversiBoard());
+    reversiModel = parseReversiBoard(config.getReversiBoard(), config.getPieces());
   }
 
-  private static ReversiModel parseReversiBoard(@Nullable String reversiBoard) {
+  private static ReversiModel parseReversiBoard(@Nullable String reversiBoard, int nextPieces) {
     ReversiModel reversiModel = new ReversiModel();
     if (reversiBoard == null) {
       reversiModel.reset();
     } else {
+      reversiModel.setNextPieces(Pieces.values()[nextPieces]);
       for (int y = 1; y <= 8; y++) {
         for (int x = 1; x <= 8; x++) {
           Pieces pieces = Pieces.values()[Integer.parseInt(reversiBoard.substring(0, 1))];
@@ -39,7 +40,13 @@ public class ReversiRepository implements Closeable {
 
   @Override
   public void close() {
-    config.setReversiBoard(parseReversiBoard());
+    if (reversiModel.getNextPieces() != null) {
+      config.setReversiBoard(parseReversiBoard());
+      config.setPieces(reversiModel.getNextPieces().ordinal());
+    } else {
+      config.setReversiBoard(null);
+      config.setPieces(0);
+    }
   }
 
   private String parseReversiBoard() {
@@ -50,26 +57,5 @@ public class ReversiRepository implements Closeable {
       }
     }
     return reversiBoard.toString();
-  }
-
-  public Pieces getNextPieces() {
-    int pieces = config.getPieces();
-    if (pieces < 0) {
-      return null;
-    }
-    return Pieces.values()[pieces];
-  }
-
-  public void setNextPieces(@Nullable Pieces pieces) {
-    if (pieces != null) {
-      config.setPieces(pieces.ordinal());
-    } else {
-      config.setPieces(-1);
-    }
-  }
-
-  public void reset() {
-    reversiModel.reset();
-    setNextPieces(Pieces.BLACK);
   }
 }

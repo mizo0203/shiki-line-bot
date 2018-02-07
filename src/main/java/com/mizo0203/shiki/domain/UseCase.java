@@ -3,8 +3,8 @@ package com.mizo0203.shiki.domain;
 import com.linecorp.bot.model.event.*;
 import com.linecorp.bot.model.event.message.*;
 import com.linecorp.bot.model.event.source.GroupSource;
+import com.linecorp.bot.model.message.Message;
 import com.linecorp.bot.model.message.TextMessage;
-import com.mizo0203.shiki.domain.model.Pieces;
 import com.mizo0203.shiki.domain.model.ReversiModel;
 import com.mizo0203.shiki.repo.*;
 import com.mizo0203.shiki.repo.objectify.entity.LineTalkRoomConfig;
@@ -44,8 +44,7 @@ public class UseCase implements Closeable {
 
       try (ReversiRepository reversiRepository = new ReversiRepository(config)) {
         ReversiModel reversiModel = reversiRepository.getReversiModel();
-        String messageText =
-            mTranslator.parseLineMessageText(reversiModel, reversiRepository.getNextPieces());
+        String messageText = mTranslator.parseLineMessageText(reversiModel);
         mRepository.replyMessage(event.getReplyToken(), new TextMessage(messageText));
       }
     }
@@ -57,31 +56,30 @@ public class UseCase implements Closeable {
         new ConfigRepository(event.getSource().getSenderId())) {
       LineTalkRoomConfig config = configRepository.getLineTalkRoomConfig();
       try (ReversiRepository reversiRepository = new ReversiRepository(config)) {
-        String messageText = play(reversiRepository, message.getText());
-        mRepository.replyMessage(event.getReplyToken(), new TextMessage(messageText));
-        if (reversiRepository.getNextPieces() == null) {
-          if (event.getSource() instanceof GroupSource) {
-            mRepository.leaveGroup(event.getSource().getSenderId());
-            configRepository.deleteLineTalkRoomConfig();
-          }
+        ReversiModel reversiModel = reversiRepository.getReversiModel();
+        Message playLineMessage = playLineMessage(reversiModel, message.getText());
+        if (reversiModel.getNextPieces() != null) {
+          mRepository.replyMessage(event.getReplyToken(), playLineMessage);
+        } else if (event.getSource() instanceof GroupSource) {
+          mRepository.replyMessage(event.getReplyToken(), playLineMessage);
+          mRepository.leaveGroup(event.getSource().getSenderId());
+          configRepository.deleteLineTalkRoomConfig();
+        } else {
+          Message resetLineMessage = resetLineMessage(reversiModel);
+          mRepository.replyMessage(event.getReplyToken(), playLineMessage, resetLineMessage);
         }
       }
     }
   }
 
-  private String play(ReversiRepository reversiRepository, String message) {
-    ReversiModel reversiModel = reversiRepository.getReversiModel();
-    Pieces oneself = reversiRepository.getNextPieces();
-    if (oneself == null) {
-      reversiRepository.reset();
-      return mTranslator.parseLineMessageText(reversiModel, reversiRepository.getNextPieces());
-    }
-    boolean played = mTranslator.play(reversiModel, message, oneself);
-    if (played) {
-      Pieces nextPieces = reversiModel.nextPieces(oneself);
-      reversiRepository.setNextPieces(nextPieces);
-    }
-    return mTranslator.parseLineMessageText(reversiModel, reversiRepository.getNextPieces());
+  private Message playLineMessage(ReversiModel reversiModel, String message) {
+    mTranslator.play(reversiModel, message);
+    return new TextMessage(mTranslator.parseLineMessageText(reversiModel));
+  }
+
+  private Message resetLineMessage(ReversiModel reversiModel) {
+    reversiModel.reset();
+    return new TextMessage(mTranslator.parseLineMessageText(reversiModel));
   }
 
   public void parseWebhookEvent(

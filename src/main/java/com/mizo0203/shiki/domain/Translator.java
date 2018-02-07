@@ -35,13 +35,15 @@ import java.util.Date;
     throw new UnsupportedOperationException();
   }
 
-  public boolean play(ReversiModel reversiModel, String message, Pieces pieces) {
+  public void play(ReversiModel reversiModel, String message) {
     if (message.length() != 2) {
-      return false;
+      return;
     }
     int x = parseX(message);
     int y = parseY(message);
-    return x != 0 && y != 0 && reversiModel.play(x, y, pieces);
+    if (x != 0 && y != 0) {
+      reversiModel.play(x, y);
+    }
   }
 
   private int parseX(String message) {
@@ -85,7 +87,8 @@ import java.util.Date;
     }
   }
 
-  public String parseLineMessageText(ReversiModel reversiModel, Pieces pieces) {
+  public String parseLineMessageText(ReversiModel reversiModel) {
+    Pieces pieces = reversiModel.getNextPieces();
     StringBuilder messageText = new StringBuilder();
     int black = reversiModel.countPieces(Pieces.BLACK);
     int white = reversiModel.countPieces(Pieces.WHITE);
