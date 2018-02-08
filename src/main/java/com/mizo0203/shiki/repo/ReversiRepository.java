@@ -1,6 +1,7 @@
 package com.mizo0203.shiki.repo;
 
 import com.mizo0203.shiki.domain.model.Pieces;
+import com.mizo0203.shiki.domain.model.RepoReversiFormat;
 import com.mizo0203.shiki.domain.model.ReversiModel;
 import com.mizo0203.shiki.repo.objectify.entity.LineTalkRoomConfig;
 
@@ -18,20 +19,13 @@ public class ReversiRepository implements Closeable {
   }
 
   private static ReversiModel parseReversiBoard(@Nullable String reversiBoard, int nextPieces) {
-    ReversiModel reversiModel = new ReversiModel();
     if (reversiBoard == null) {
-      reversiModel.reset();
+      return new ReversiModel();
     } else {
+      ReversiModel reversiModel = new RepoReversiFormat().parse(reversiBoard);
       reversiModel.setNextPieces(Pieces.values()[nextPieces]);
-      for (int y = 1; y <= 8; y++) {
-        for (int x = 1; x <= 8; x++) {
-          Pieces pieces = Pieces.values()[Integer.parseInt(reversiBoard.substring(0, 1))];
-          reversiBoard = reversiBoard.substring(1);
-          reversiModel.setPieces(x, y, pieces);
-        }
-      }
+      return reversiModel;
     }
-    return reversiModel;
   }
 
   public ReversiModel getReversiModel() {
@@ -41,7 +35,7 @@ public class ReversiRepository implements Closeable {
   @Override
   public void close() {
     if (reversiModel.getNextPieces() != null) {
-      config.setReversiBoard(parseReversiBoard());
+      config.setReversiBoard(formatReversiBoard());
       config.setPieces(reversiModel.getNextPieces().ordinal());
     } else {
       config.setReversiBoard(null);
@@ -49,13 +43,7 @@ public class ReversiRepository implements Closeable {
     }
   }
 
-  private String parseReversiBoard() {
-    StringBuilder reversiBoard = new StringBuilder();
-    for (int y = 1; y <= 8; y++) {
-      for (int x = 1; x <= 8; x++) {
-        reversiBoard.append(reversiModel.getPieces(x, y).ordinal());
-      }
-    }
-    return reversiBoard.toString();
+  private String formatReversiBoard() {
+    return new RepoReversiFormat().format(reversiModel);
   }
 }

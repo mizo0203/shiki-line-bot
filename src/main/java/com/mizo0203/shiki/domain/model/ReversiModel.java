@@ -1,8 +1,8 @@
 package com.mizo0203.shiki.domain.model;
 
+import javax.annotation.Nonnull;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 
 public class ReversiModel {
@@ -20,21 +20,24 @@ public class ReversiModel {
   private final int[] dy_array = new int[] {-1, -1, -1, 0, 0, 1, 1, 1};
   private Pieces nextPieces;
 
-  public boolean play(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y) {
+  public ReversiModel() {
+    reset();
+  }
+
+  public void play(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y) {
     if (reversePieces(x, y, nextPieces) == 0) {
-      return false;
+      return;
     }
     board[y][x] = nextPieces;
     nextPieces = updateNextPieces(nextPieces);
-    return true;
   }
 
-  public void setPieces(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y, Pieces pieces) {
+  /* package */ void setPieces(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y, Pieces pieces) {
     board[y][x] = pieces;
   }
 
-  @NotNull
-  public Pieces getPieces(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y) {
+  @Nonnull
+  /* package */ Pieces getPieces(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y) {
     return board[y][x];
   }
 
