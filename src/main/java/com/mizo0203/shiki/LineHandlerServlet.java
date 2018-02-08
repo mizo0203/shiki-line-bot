@@ -1,7 +1,9 @@
 package com.mizo0203.shiki;
 
+import com.linecorp.bot.model.event.JoinEvent;
 import com.linecorp.bot.model.event.MessageEvent;
 import com.linecorp.bot.model.event.PostbackEvent;
+import com.linecorp.bot.model.event.message.TextMessageContent;
 import com.mizo0203.shiki.domain.UseCase;
 
 import javax.servlet.http.HttpServlet;
@@ -10,11 +12,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.logging.Logger;
 
-public class ShikiLineBotServlet extends HttpServlet {
+public class LineHandlerServlet extends HttpServlet {
 
-  private static final Logger LOG = Logger.getLogger(ShikiLineBotServlet.class.getName());
-
-  private UseCase mUseCase;
+  private static final Logger LOG = Logger.getLogger(LineHandlerServlet.class.getName());
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) {
@@ -35,29 +35,27 @@ public class ShikiLineBotServlet extends HttpServlet {
    *     to the client
    */
   private void onLineWebhook(HttpServletRequest req, HttpServletResponse resp) {
-    mUseCase = new UseCase();
-    try {
-      mUseCase.parseWebhookEvent(
+    try (UseCase useCase = new UseCase()) {
+      useCase.parseWebhookEvent(
           req,
-          this::onLineMessage,
+          event -> onLineMessage(useCase, event),
           null,
           null,
-          mUseCase::onLineJoin,
+          event -> onLineJoin(useCase, event),
           null,
-          this::onLinePostBack,
+          event -> onLinePostBack(useCase, event),
           null);
     } finally {
       // ボットアプリのサーバーに webhook から送信される HTTP POST リクエストには、ステータスコード 200 を返す必要があります。
       // https://developers.line.me/ja/docs/messaging-api/reference/#anchor-99cdae5b4b38ad4b86a137b508fd7b1b861e2366
       resp.setStatus(HttpServletResponse.SC_OK);
-      mUseCase.close();
     }
   }
 
-  private void onLineMessage(MessageEvent event) {
-    mUseCase.parseMessageEvent(
+  private void onLineMessage(UseCase useCase, MessageEvent event) {
+    useCase.parseMessageEvent(
         event.getMessage(),
-        message -> mUseCase.onLineTextMessage(event, message),
+        message -> onLineTextMessage(useCase, event, message),
         null,
         null,
         null,
@@ -66,14 +64,22 @@ public class ShikiLineBotServlet extends HttpServlet {
         null);
   }
 
-  private void onLinePostBack(PostbackEvent event) {
-    mUseCase.parseLinePostbackEvent(
-        event.getPostbackContent().getParams(),
-        param -> onLinePostBackNoParam(event),
-        param -> onLinePostBackDateParam(event, param));
+  private void onLineTextMessage(UseCase useCase, MessageEvent event, TextMessageContent message) {
+    useCase.onLineTextMessage(event, message);
   }
 
-  private void onLinePostBackNoParam(PostbackEvent event) {}
+  private void onLineJoin(UseCase useCase, JoinEvent event) {
+    useCase.onLineJoin(event);
+  }
 
-  private void onLinePostBackDateParam(PostbackEvent event, Date date) {}
+  private void onLinePostBack(UseCase useCase, PostbackEvent event) {
+    useCase.parseLinePostbackEvent(
+        event.getPostbackContent().getParams(),
+        param -> onLinePostBackNoParam(useCase, event),
+        param -> onLinePostBackDateParam(useCase, event, param));
+  }
+
+  private void onLinePostBackNoParam(UseCase useCase, PostbackEvent event) {}
+
+  private void onLinePostBackDateParam(UseCase useCase, PostbackEvent event, Date date) {}
 }
