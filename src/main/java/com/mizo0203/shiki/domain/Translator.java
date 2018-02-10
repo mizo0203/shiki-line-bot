@@ -3,34 +3,9 @@ package com.mizo0203.shiki.domain;
 import com.mizo0203.shiki.domain.model.LineReversiFormat;
 import com.mizo0203.shiki.domain.model.ReversiModel;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /* package */ class Translator {
 
   /* package */ Translator() {}
-
-  public Date parseDatetime(String datetime) {
-    try {
-      SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-      fmt.setTimeZone(Define.LINE_TIME_ZONE);
-      return fmt.parse(datetime);
-    } catch (ParseException e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  public Date parseDate(String date) {
-    // 未実装
-    throw new UnsupportedOperationException();
-  }
-
-  public Date parseTime(String time) {
-    // 未実装
-    throw new UnsupportedOperationException();
-  }
 
   public void play(ReversiModel reversiModel, String message) {
     if (message.length() != 2) {
