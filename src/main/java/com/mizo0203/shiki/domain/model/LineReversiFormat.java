@@ -22,7 +22,7 @@ public class LineReversiFormat extends ReversiFormat {
       messageText.append("\n");
     }
     if (pieces == null) {
-      messageText.append("ゲーム終了\n");
+      messageText.append("そこまで！\n");
       if (black != white) {
         messageText.append("人生の勝利者：").append(black > white ? "黒Ｘ" : "白Ｏ");
       } else {
