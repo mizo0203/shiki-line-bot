@@ -47,7 +47,11 @@ public class UseCase implements Closeable {
       try (ReversiRepository reversiRepository = new ReversiRepository(config)) {
         ReversiModel reversiModel = reversiRepository.getReversiModel();
         String messageText = mTranslator.parseLineMessageText(reversiModel);
-        mRepository.replyMessage(event.getReplyToken(), new TextMessage(messageText));
+        mRepository.replyMessage(
+            event.getReplyToken(),
+            new TextMessage("注目！"),
+            new TextMessage(messageText),
+            new TextMessage("決闘開始！"));
       }
     }
   }
@@ -68,7 +72,12 @@ public class UseCase implements Closeable {
           configRepository.deleteLineTalkRoomConfig();
         } else {
           Message resetLineMessage = resetLineMessage(reversiModel);
-          mRepository.replyMessage(event.getReplyToken(), playLineMessage, resetLineMessage);
+          mRepository.replyMessage(
+              event.getReplyToken(),
+              playLineMessage,
+              new TextMessage("注目！"),
+              resetLineMessage,
+              new TextMessage("決闘開始！"));
         }
       }
     }
