@@ -13,14 +13,15 @@ public class LineReversiFormat extends ReversiFormat {
     int black = reversiModel.countPieces(Pieces.BLACK);
     int white = reversiModel.countPieces(Pieces.WHITE);
     messageText.append("黒Ｘ：").append(black).append("　白Ｏ：").append(white).append("\n");
-    messageText.append("＼ＡＢＣＤＥＦＧＨ\n");
+    messageText.append("＼ＡＢＣＤＥＦＧＨ／\n");
     for (int y = 1; y <= 8; y++) {
       messageText.append(formatY(y));
       for (int x = 1; x <= 8; x++) {
         messageText.append(formatPieces(reversiModel.getPieces(x, y)));
       }
-      messageText.append("\n");
+      messageText.append(formatY(y)).append("\n");
     }
+    messageText.append("／ＡＢＣＤＥＦＧＨ＼\n");
     if (pieces == null) {
       messageText.append("そこまで！\n");
       if (black != white) {
