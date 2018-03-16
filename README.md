@@ -1,5 +1,7 @@
 # リバーシ LINE Bot 四季
 
+[![Build Status](https://travis-ci.org/mizo0203/shiki-line-bot.svg?branch=master)](https://travis-ci.org/mizo0203/shiki-line-bot)
+
 本アプリケーションは「東方Project」の二次創作品です。原作者の「[上海アリス幻樂団](http://www16.big.or.jp/~zun/)」様とは一切関係ございません。本アプリケーションに関するお問い合わせは、 [@mizo0203](https://github.com/mizo0203) までお願いいたします。
 
 ## 概要

@@ -14,8 +14,6 @@
 <!-- [START config] -->
 <!-- https://cloud.google.com/appengine/docs/standard/java/config/appref -->
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
-    <application>YOUR-PROJECT-ID</application>
-    <version>YOUR-VERSION-ID</version>
     <threadsafe>false</threadsafe>
     <runtime>java8</runtime>
     <url-stream-handler>urlfetch</url-stream-handler>
