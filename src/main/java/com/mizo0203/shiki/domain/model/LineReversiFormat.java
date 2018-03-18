@@ -8,7 +8,6 @@ public class LineReversiFormat extends ReversiFormat {
 
   @Override
   public String format(ReversiModel reversiModel) {
-    Pieces pieces = reversiModel.getNextPieces();
     StringBuilder messageText = new StringBuilder();
     int black = reversiModel.countPieces(Pieces.BLACK);
     int white = reversiModel.countPieces(Pieces.WHITE);
@@ -22,7 +21,8 @@ public class LineReversiFormat extends ReversiFormat {
       messageText.append(formatY(y)).append("\n");
     }
     messageText.append("／ＡＢＣＤＥＦＧＨ＼\n");
-    if (pieces == null) {
+    Pieces nextPieces = reversiModel.getNextPieces();
+    if (nextPieces == null) {
       messageText.append("そこまで！\n");
       if (black != white) {
         messageText.append("人生の勝利者：").append(black > white ? "黒Ｘ" : "白Ｏ");
@@ -30,11 +30,18 @@ public class LineReversiFormat extends ReversiFormat {
         messageText.append("引き分け");
       }
     } else {
-      switch (pieces) {
+      boolean nextPassed = reversiModel.isNextPassed();
+      switch (nextPieces) {
         case BLACK:
+          if (nextPassed) {
+            messageText.append("白Ｏの手番：パス\n");
+          }
           messageText.append("黒Ｘの手番：");
           break;
         case WHITE:
+          if (nextPassed) {
+            messageText.append("黒Ｘの手番：パス\n");
+          }
           messageText.append("白Ｏの手番：");
           break;
         default:

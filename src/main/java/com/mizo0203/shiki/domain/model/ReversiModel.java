@@ -19,17 +19,22 @@ public class ReversiModel {
   private final int[] dx_array = new int[] {-1, 0, 1, -1, 1, -1, 0, 1};
   private final int[] dy_array = new int[] {-1, -1, -1, 0, 0, 1, 1, 1};
   private Pieces nextPieces;
+  private boolean nextPassed;
 
   public ReversiModel() {
     reset();
   }
 
   public void play(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y) {
-    if (reversePieces(x, y, nextPieces) == 0) {
+    Pieces nowPieces = nextPieces;
+    if (reversePieces(x, y, nowPieces) == 0) {
       return;
     }
-    board[y][x] = nextPieces;
-    nextPieces = updateNextPieces(nextPieces);
+    board[y][x] = nowPieces;
+    nextPieces = calcNextPieces(nowPieces);
+    if (nextPieces == nowPieces) {
+      nextPassed = true;
+    }
   }
 
   /* package */ void setPieces(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y, Pieces pieces) {
@@ -50,6 +55,7 @@ public class ReversiModel {
     board[5][D] = Pieces.BLACK;
     board[5][E] = Pieces.WHITE;
     nextPieces = Pieces.BLACK;
+    nextPassed = false;
   }
 
   private int reversePieces(@Min(1) @Max(8) int x, @Min(1) @Max(8) int y, Pieces oneself) {
@@ -96,7 +102,7 @@ public class ReversiModel {
     return false;
   }
 
-  private Pieces updateNextPieces(Pieces oneself) {
+  private Pieces calcNextPieces(Pieces oneself) {
     Pieces opponent = oneself.getOpponent();
     for (int y = 1; y <= 8; y++) {
       for (int x = 1; x <= 8; x++) {
@@ -121,6 +127,10 @@ public class ReversiModel {
 
   public void setNextPieces(Pieces nextPieces) {
     this.nextPieces = nextPieces;
+  }
+
+  public boolean isNextPassed() {
+    return nextPassed;
   }
 
   public int countPieces(Pieces pieces) {
